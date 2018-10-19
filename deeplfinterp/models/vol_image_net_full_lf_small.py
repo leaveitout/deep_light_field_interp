@@ -186,6 +186,8 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
 
         self.final_subnet = SubNet()
 
+        self.weights_init()
+
     def _add_tiled(self, x, y):
         """
         Tiles y to be the same shape as x, before adding it.
@@ -281,4 +283,4 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
     def weights_init(self):
         for m in self.modules():
             if isinstance(m, torch.nn.Conv2d):
-                torch.nn.init.kaiming_normal(m.weight.data)
+                torch.nn.init.kaiming_normal_(m.weight.data)
