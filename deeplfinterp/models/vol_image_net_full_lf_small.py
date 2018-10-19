@@ -184,7 +184,23 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
             torch.nn.ReLU(inplace=False)
         )
 
-        self.final_subnet = SubNet()
+        self.deconv1 = BasicNet(128, 128)
+        self.upsample1 = torch.nn.Sequential(
+            torch.nn.Upsample(
+                scale_factor=2,
+                mode='bilinear',
+                align_corners=True
+            ),
+            torch.nn.Conv2d(
+                in_channels=128,
+                out_channels=128,
+                kernel_size=3,
+                stride=1,
+                padding=1
+            ),
+            torch.nn.ReLU(inplace=False)
+        )
+        # self.final_subnet = SubNet()
 
         self.weights_init()
 
@@ -274,7 +290,12 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
 
         combined_output = self._add_tiled(upsample2_output, conv2_output)
 
-        outputs = self.final_subnet(combined_output)
+        deconv1_output = self.deconv2(combined_output)
+        upsample1_output = self.upsample2(deconv1_output)
+
+        outputs = self._add_tiled(upsample1_output, conv1_output)
+
+        # outputs = self.final_subnet(combined_output)
 
         outputs = outputs * x_std_dev
 
