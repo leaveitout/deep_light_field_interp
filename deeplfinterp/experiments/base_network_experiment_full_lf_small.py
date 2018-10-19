@@ -26,7 +26,7 @@ class LFBaseNetExperimentFullLFSmall(Experiment):
 
         self.model = LFVolBaseNetFullLFSmall()
 
-        self.model.apply(self.model.weights_init())
+        self.model.apply(self.model.weights_init)
 
         self.optimizer = optim.Adamax(
             params=self.model.parameters()
