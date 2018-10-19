@@ -59,17 +59,17 @@ class SubNet(torch.nn.Module):
                                      stride=1,
                                      padding=1)
 
-        self.conv2 = torch.nn.Conv2d(in_channels=240,
-                                     out_channels=240,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
-
-        self.conv3 = torch.nn.Conv2d(in_channels=240,
-                                     out_channels=240,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
+        # self.conv2 = torch.nn.Conv2d(in_channels=240,
+        #                              out_channels=240,
+        #                              kernel_size=3,
+        #                              stride=1,
+        #                              padding=1)
+        #
+        # self.conv3 = torch.nn.Conv2d(in_channels=240,
+        #                              out_channels=240,
+        #                              kernel_size=3,
+        #                              stride=1,
+        #                              padding=1)
 
         self.upsample = torch.nn.Upsample(scale_factor=2,
                                           mode='bilinear',
@@ -86,10 +86,10 @@ class SubNet(torch.nn.Module):
     def forward(self, input_tensor):
         output = self.conv1(input_tensor)
         output = self.relu(output)
-        output = self.conv2(output)
-        output = self.relu(output)
-        output = self.conv3(output)
-        output = self.relu(output)
+        # output = self.conv2(output)
+        # output = self.relu(output)
+        # output = self.conv3(output)
+        # output = self.relu(output)
         output = self.upsample(output)
         output = self.conv4(output)
 
