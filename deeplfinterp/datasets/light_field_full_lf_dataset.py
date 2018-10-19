@@ -36,10 +36,17 @@ class LightFieldFullLFDataset(Dataset):
 
         print("Found images dataset with shape {}".format(self.lf_images.shape))
 
-        self.x_light_field_idxs = [0, 7, 56, 63]
-        all_idxs = list(range(64))
-        self.y_light_field_idxs = list(set(all_idxs) -
-                                       set(self.x_light_field_idxs))
+        self.x_light_field_idxs = [0, 5, 40, 45]
+        self.y_light_field_idxs = [1, 2, 3, 4,
+                                   8, 9, 10, 11, 12, 13,
+                                   16, 17, 18, 19, 20, 21,
+                                   24, 25, 26, 27, 28, 29,
+                                   32, 33, 34, 35, 36, 37,
+                                   41, 42, 43, 44]
+        # self.x_light_field_idxs = [0, 7, 56, 63]
+        # all_idxs = list(range(64))
+        # self.y_light_field_idxs = list(set(all_idxs) -
+        #                                set(self.x_light_field_idxs))
         # self.x_light_field_idxs = [0, 6, 48, 54]
         # self.y_light_field_idxs = [2, 4,
         #                            16, 18, 20, 22,

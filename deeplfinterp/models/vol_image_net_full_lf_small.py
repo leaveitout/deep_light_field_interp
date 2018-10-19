@@ -53,8 +53,8 @@ class BasicNet(torch.nn.Module):
 class SubNet(torch.nn.Module):
     def __init__(self):
         super(SubNet, self).__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels=240,
-                                     out_channels=240,
+        self.conv1 = torch.nn.Conv2d(in_channels=128,
+                                     out_channels=128,
                                      kernel_size=3,
                                      stride=1,
                                      padding=1)
@@ -75,8 +75,8 @@ class SubNet(torch.nn.Module):
                                           mode='bilinear',
                                           align_corners=True)
 
-        self.conv4 = torch.nn.Conv2d(in_channels=240,
-                                     out_channels=240,
+        self.conv4 = torch.nn.Conv2d(in_channels=128,
+                                     out_channels=128,
                                      kernel_size=3,
                                      stride=1,
                                      padding=1)
@@ -101,16 +101,16 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         super(LFVolBaseNetFullLFSmall, self).__init__()
         print("LFVolBaseNetFullLFSmall")
 
-        self.conv1 = BasicNet(16, 30)
+        self.conv1 = BasicNet(16, 32)
         self.pool1 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv2 = BasicNet(30, 60)
+        self.conv2 = BasicNet(32, 64)
         self.pool2 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv3 = BasicNet(60, 120)
+        self.conv3 = BasicNet(64, 128)
         self.pool3 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv4 = BasicNet(120, 240)
+        self.conv4 = BasicNet(128, 256)
         self.pool4 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
         # self.conv5 = BasicNet(256, 512)
@@ -133,7 +133,7 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         #     torch.nn.ReLU(inplace=False)
         # )
 
-        self.deconv4 = BasicNet(240, 240)
+        self.deconv4 = BasicNet(256, 256)
         self.upsample4 = torch.nn.Sequential(
             torch.nn.Upsample(
                 scale_factor=2,
@@ -141,8 +141,8 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
                 align_corners=True
             ),
             torch.nn.Conv2d(
-                in_channels=240,
-                out_channels=240,
+                in_channels=256,
+                out_channels=256,
                 kernel_size=3,
                 stride=1,
                 padding=1
@@ -150,7 +150,7 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
             torch.nn.ReLU(inplace=False)
         )
 
-        self.deconv3 = BasicNet(240, 240)
+        self.deconv3 = BasicNet(256, 128)
         self.upsample3 = torch.nn.Sequential(
             torch.nn.Upsample(
                 scale_factor=2,
@@ -158,8 +158,8 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
                 align_corners=True
             ),
             torch.nn.Conv2d(
-                in_channels=240,
-                out_channels=240,
+                in_channels=128,
+                out_channels=128,
                 kernel_size=3,
                 stride=1,
                 padding=1
@@ -167,7 +167,7 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
             torch.nn.ReLU(inplace=False)
         )
 
-        self.deconv2 = BasicNet(240, 240)
+        self.deconv2 = BasicNet(128, 128)
         self.upsample2 = torch.nn.Sequential(
             torch.nn.Upsample(
                 scale_factor=2,
@@ -175,8 +175,8 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
                 align_corners=True
             ),
             torch.nn.Conv2d(
-                in_channels=240,
-                out_channels=240,
+                in_channels=128,
+                out_channels=128,
                 kernel_size=3,
                 stride=1,
                 padding=1
@@ -260,12 +260,14 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         deconv4_output = self.deconv4(pool4_output)
         upsample4_output = self.upsample4(deconv4_output)
 
-        combined_output = self._add_tiled(upsample4_output, conv4_output)
+        # combined_output = self._add_tiled(upsample4_output, conv4_output)
+        combined_output = upsample4_output + conv4_output
 
         deconv3_output = self.deconv3(combined_output)
         upsample3_output = self.upsample3(deconv3_output)
 
-        combined_output = self._add_tiled(upsample3_output, conv3_output)
+        # combined_output = self._add_tiled(upsample3_output, conv3_output)
+        combined_output = upsample3_output + conv3_output
 
         deconv2_output = self.deconv2(combined_output)
         upsample2_output = self.upsample2(deconv2_output)

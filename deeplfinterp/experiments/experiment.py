@@ -5,7 +5,7 @@ Contact sbruton[á]tcd.ie.
 """
 import time
 
-from lfvis.util import train_tools, analytics
+from ..util import train_tools, analytics
 
 from apex import amp
 
@@ -23,6 +23,7 @@ class Experiment:
         start_time = time.clock()
 
         if self.config['fp16']:
+            print("Using fp16")
             amp_handle = amp.init(enabled=True)
         else:
             amp_handle = amp.init(enabled=False)
