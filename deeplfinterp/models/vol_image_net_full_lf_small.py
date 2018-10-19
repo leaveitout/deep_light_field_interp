@@ -133,7 +133,7 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         #     torch.nn.ReLU(inplace=False)
         # )
 
-        self.deconv4 = BasicNet(240, 960)
+        self.deconv4 = BasicNet(240, 240)
         self.upsample4 = torch.nn.Sequential(
             torch.nn.Upsample(
                 scale_factor=2,
@@ -141,8 +141,8 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
                 align_corners=True
             ),
             torch.nn.Conv2d(
-                in_channels=960,
-                out_channels=960,
+                in_channels=240,
+                out_channels=240,
                 kernel_size=3,
                 stride=1,
                 padding=1
@@ -150,7 +150,7 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
             torch.nn.ReLU(inplace=False)
         )
 
-        self.deconv3 = BasicNet(960, 480)
+        self.deconv3 = BasicNet(240, 240)
         self.upsample3 = torch.nn.Sequential(
             torch.nn.Upsample(
                 scale_factor=2,
@@ -158,8 +158,8 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
                 align_corners=True
             ),
             torch.nn.Conv2d(
-                in_channels=480,
-                out_channels=480,
+                in_channels=240,
+                out_channels=240,
                 kernel_size=3,
                 stride=1,
                 padding=1
@@ -167,7 +167,7 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
             torch.nn.ReLU(inplace=False)
         )
 
-        self.deconv2 = BasicNet(480, 240)
+        self.deconv2 = BasicNet(240, 240)
         self.upsample2 = torch.nn.Sequential(
             torch.nn.Upsample(
                 scale_factor=2,
