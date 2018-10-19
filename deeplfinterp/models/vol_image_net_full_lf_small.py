@@ -290,11 +290,10 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
 
         combined_output = self._add_tiled(upsample2_output, conv2_output)
 
-        deconv1_output = self.deconv2(combined_output)
-        upsample1_output = self.upsample2(deconv1_output)
+        deconv1_output = self.deconv1(combined_output)
+        upsample1_output = self.upsample1(deconv1_output)
 
-        outputs = upsample1_output
-        # outputs = self._add_tiled(upsample1_output, conv1_output)
+        outputs = self._add_tiled(upsample1_output, conv1_output)
 
         # outputs = self.final_subnet(combined_output)
 
