@@ -387,7 +387,7 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         deconv2_vol_output = self.deconv2_vol(combined_vol_output)
         upsample2_vol_output = self.upsample2_vol(deconv2_vol_output)
 
-        combined_vol_output = upsample2_vol_output + conv2_output
+        combined_vol_output = self._add_tiled(upsample2_vol_output, conv2_output)
 
         deconv1_vol_output = self.deconv1_vol(combined_vol_output)
         upsample1_vol_output = self.upsample1_vol(deconv1_vol_output)
