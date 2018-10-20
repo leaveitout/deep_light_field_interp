@@ -16,6 +16,7 @@ class LFBaseNetExperimentFullLFSmallRank(Experiment):
 
         self.train_set = LightFieldFullLFVolumeDataset(
             dataset_loc=config['dataset_loc'],
+            rank_reps_loc=config['rank_reps_loc'],
             training=True
         )
 
