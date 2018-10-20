@@ -97,7 +97,7 @@ class SubNet(torch.nn.Module):
 
 
 class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, num_rank_images):
         super(LFVolBaseNetFullLFSmallRank, self).__init__()
         print("LFVolBaseNetFullLFSmall")
 
@@ -113,7 +113,7 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         self.conv4 = BasicNet(128, 256)
         self.pool4 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv1_vol = BasicNet(16, 32)
+        self.conv1_vol = BasicNet(num_rank_images, 32)
         self.pool1_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
         self.conv2_vol = BasicNet(32, 64)

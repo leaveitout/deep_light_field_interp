@@ -26,7 +26,9 @@ class LFBaseNetExperimentFullLFSmallRank(Experiment):
             training=False
         )
 
-        self.model = LFVolBaseNetFullLFSmallRank()
+        self.model = LFVolBaseNetFullLFSmallRank(
+            num_rank_images=config['num_rank_images']
+        )
 
         self.optimizer = optim.Adamax(
             params=self.model.parameters()
