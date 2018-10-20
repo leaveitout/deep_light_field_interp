@@ -122,7 +122,7 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         self.conv3_vol = BasicNet(64, 128)
         self.pool3_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv4 = BasicNet(128, 256)
+        self.conv4_vol = BasicNet(128, 256)
         self.pool4_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
         # self.conv5 = BasicNet(256, 512)
