@@ -1,0 +1,14 @@
+RawFile: subclavia.raw
+Resolution: 512 512 96
+Format: UINT8
+BasisVector1: 399.219 0 0
+BasisVector2: 0 399.219 0
+BasisVector3: 0 0 76
+Offset: -199.609 -199.609 -38
+WorldVector1: 1 0 0 0
+WorldVector2: 0 1 0 0
+WorldVector3: 0 0 1 0
+WorldVector4: 0 0 0 1
+DataRange: 0 255
+ValueRange: 0 255
+Unit: arb. unit.
