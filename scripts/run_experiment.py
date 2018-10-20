@@ -12,11 +12,13 @@ from deeplfinterp.experiments import LFBaseNetExperiment
 from deeplfinterp.experiments import LFVolNetExperiment
 from deeplfinterp.experiments import LFBaseNetExperimentFullLF
 from deeplfinterp.experiments import LFBaseNetExperimentFullLFSmall
+from deeplfinterp.experiments import LFBaseNetExperimentFullLFSmallRank
 
 experiments = {
     'lf_base_net': LFBaseNetExperiment,
     'lf_base_net_full_lf': LFBaseNetExperimentFullLF,
     'lf_base_net_full_lf_small': LFBaseNetExperimentFullLFSmall,
+    'lf_base_net_full_lf_small_rank': LFBaseNetExperimentFullLFSmallRank,
     'lf_vol_net': LFVolNetExperiment
 }
 

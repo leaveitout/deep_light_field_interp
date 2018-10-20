@@ -1,3 +1,4 @@
 from .light_field_dataset import LightFieldDataset
 from .light_field_volume_dataset import LightFieldVolumeDataset
 from .light_field_full_lf_dataset import LightFieldFullLFDataset
+from .light_field_full_lf_volume_dataset import LightFieldFullLFVolumeDataset

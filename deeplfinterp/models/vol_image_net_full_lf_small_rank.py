@@ -96,9 +96,9 @@ class SubNet(torch.nn.Module):
         return output
 
 
-class LFVolBaseNetFullLFSmall(torch.nn.Module):
+class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
     def __init__(self):
-        super(LFVolBaseNetFullLFSmall, self).__init__()
+        super(LFVolBaseNetFullLFSmallRank, self).__init__()
         print("LFVolBaseNetFullLFSmall")
 
         self.conv1 = BasicNet(16, 32)
@@ -321,10 +321,13 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         # It is also not possible to load as fp16 as pytorch does not have
         # concatenation defined for cpu fp16.
         inputs = inputs.float()
-        inputs = inputs - x_mean
-        inputs = inputs / x_std_dev
+        inputs_image = inputs[:, :16]
+        vol_rep = inputs[:, 16:]
+        inputs_image = inputs_image - x_mean
+        inputs_image = inputs_image / x_std_dev
 
-        conv1_output = self.conv1(inputs)
+        # Main branch
+        conv1_output = self.conv1(inputs_image)
         pool1_output = self.pool1(conv1_output)
 
         conv2_output = self.conv2(pool1_output)
@@ -336,6 +339,20 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         conv4_output = self.conv4(pool3_output)
         pool4_output = self.pool4(conv4_output)
 
+        # Volume branch
+        conv1_vol_output = self.conv1_vol(vol_rep)
+        pool1_vol_output = self.pool1_vol(conv1_vol_output)
+
+        conv2_vol_output = self.conv2_vol(pool1_vol_output)
+        pool2_vol_output = self.pool2_vol(conv2_vol_output)
+
+        conv3_vol_output = self.conv3_vol(pool2_vol_output)
+        pool3_vol_output = self.pool3_vol(conv3_vol_output)
+
+        conv4_vol_output = self.conv4_vol(pool3_vol_output)
+        pool4_vol_output = self.pool4_vol(conv4_vol_output)
+
+        # Main branch
         deconv4_output = self.deconv4(pool4_output)
         upsample4_output = self.upsample4(deconv4_output)
 
@@ -356,8 +373,31 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         deconv1_output = self.deconv1(combined_output)
         upsample1_output = self.upsample1(deconv1_output)
 
-        outputs = upsample1_output
-        # outputs = self._add_tiled(upsample1_output, conv1_output)
+        # Volume branch
+        deconv4_vol_output = self.deconv4_vol(pool4_vol_output)
+        upsample4_vol_output = self.upsample4_vol(deconv4_vol_output)
+
+        combined_vol_output = upsample4_vol_output + conv4_output
+
+        deconv3_vol_output = self.deconv3_vol(combined_vol_output)
+        upsample3_vol_output = self.upsample3_vol(deconv3_vol_output)
+
+        combined_vol_output = upsample3_vol_output + conv3_output
+
+        deconv2_vol_output = self.deconv2_vol(combined_vol_output)
+        upsample2_vol_output = self.upsample2_vol(deconv2_vol_output)
+
+        combined_vol_output = upsample2_vol_output + conv2_output
+
+        deconv1_vol_output = self.deconv1_vol(combined_vol_output)
+        upsample1_vol_output = self.upsample1_vol(deconv1_vol_output)
+
+        # combined_vol_output = upsample1_vol_output + conv1_output
+
+        # outputs = upsample1_output
+        outputs = self._add_tiled(upsample1_output, conv1_output)
+
+        outputs = outputs + upsample1_vol_output
 
         # outputs = self.final_subnet(combined_output)
 
