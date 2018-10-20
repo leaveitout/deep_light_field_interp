@@ -27,7 +27,7 @@ class LightFieldFullLFVolumeDataset(Dataset):
 
         # TODO: Parametrize this
         if self.rank_rep.shape[-1] == 512:
-            self.rank_rep = self.rank_rep[:, 2, :2]
+            self.rank_rep = self.rank_rep[:, :2, :2]
 
         # Center the ranking representation on (-1, 1)
         self.rank_rep = self.rank_rep / (255 / 2)
