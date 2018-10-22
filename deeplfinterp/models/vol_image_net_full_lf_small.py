@@ -202,8 +202,6 @@ class LFVolBaseNetFullLFSmall(torch.nn.Module):
         )
         # self.final_subnet = SubNet()
 
-        self.weights_init()
-
     def _add_tiled(self, x, y):
         """
         Tiles y to be the same shape as x, before adding it.
