@@ -1,6 +1,10 @@
-# Project Title
+# Synthesising Light Field Volumetric Visualisations in Real-time Using a Compressed Representation
 
-One Paragraph of project description goes here
+This project can be used to synthesise a full light field for volume rendering applications, at real-time rates.
+A convolutional auto-encoder architecture is used to interpolate from volume renderings of four corner viewpoints.
+For more details about the techniques used please see our paper "Synthesising Light Field Volumetric Visualizations in Real-time Using a Compressed Volume Representation".
+
+If you use or extend this work, please cite this publication.
 
 ## Getting Started
 
