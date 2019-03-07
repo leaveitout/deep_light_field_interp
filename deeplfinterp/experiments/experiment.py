@@ -22,11 +22,12 @@ class Experiment:
     def run(self):
         start_time = time.clock()
 
-        if self.config['fp16']:
-            print("Using fp16")
-            amp_handle = amp.init(enabled=True)
-        else:
-            amp_handle = amp.init(enabled=False)
+        # if self.config['fp16']:
+            # print("Using fp16")
+            # amp_handle = amp.init(enabled=True)
+        # else:
+            # amp_handle = amp.init(enabled=False)
+        self.model, self.optimizer = amp.initialize(model, optimizer, opt_level='O3')
 
         history = train_tools.train(
             model=self.model,
@@ -35,8 +36,7 @@ class Experiment:
             save_path=self.config['save_path'],
             optimizer=self.optimizer,
             num_epochs=self.config['num_epochs'],
-            batch_size=self.config['batch_size'],
-            amp_handle=amp_handle
+            batch_size=self.config['batch_size']
         )
 
         print("Saving history...")

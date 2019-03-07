@@ -8,7 +8,13 @@ If you use or extend this work, please cite this publication.
 
 ## Getting Started
 
+To use this code, a dataset of light field volume renders for training and testing must be created. 
+To do this, our [custom fork of Inviwo](http://github.com/leaveitout/inviwo.git) must be used.
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+```
+git clone --recurse-submodules https://github.com/leaveitout/inviwo.git
+```
 
 ### Prerequisites
 
@@ -20,6 +26,7 @@ Give examples
 
 ### Installing
 
+To use and adapt the 
 A step by step series of examples that tell you how to get a development env running
 
 Say what the step will be

@@ -19,6 +19,7 @@ from .analytics import calc_and_save_all_metrics
 from torch.utils.data.dataset import Dataset
 from ..datasets.light_field_dataset import LightFieldDataset
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
+import amp
 
 cudnn.benchmark = True
 
@@ -311,8 +312,7 @@ def run_epoch(loader,
               criterion,
               optimizer,
               device,
-              training=True,
-              amp_handle=None):
+              training=True):
     loss_meter = AverageMeter(name='Loss', cum=False)
     custom = TrainProgressBar()
     # loss_meter = Meter(name='Loss')
@@ -354,11 +354,10 @@ def run_epoch(loader,
         # Backward pass
         if training:
             optimizer.zero_grad()
-            if amp_handle is not None:
-                with amp_handle.scale_loss(loss, optimizer) as scaled_loss:
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
                     scaled_loss.backward()
-            else:
-                loss.backward()
+            # else:
+                # loss.backward()
             optimizer.step()
 
         # Log errors
@@ -376,7 +375,6 @@ def train(model,
           optimizer: optim.Optimizer,
           num_epochs: int,
           batch_size: int = 64,
-          amp_handle=None,
           seed: int = None) -> dict:
     if seed is not None:
         torch.manual_seed(seed)
@@ -437,8 +435,7 @@ def train(model,
             criterion=criterion,
             optimizer=optimizer,
             device=device,
-            training=True,
-            amp_handle=amp_handle
+            training=True
         )
 
         valid_loss = run_epoch(
@@ -449,8 +446,7 @@ def train(model,
             criterion=criterion,
             optimizer=optimizer,
             device=device,
-            training=False,
-            amp_handle=amp_handle
+            training=False
         )
 
         train_losses.append(train_loss[0])
