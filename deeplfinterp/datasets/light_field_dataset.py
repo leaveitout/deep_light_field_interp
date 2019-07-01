@@ -1,153 +1,51 @@
 #!/usr/bin/env python3
 """
-Copyright Seán Bruton, Trinity College Dublin, 2017. 
+Copyright Seán Bruton, Trinity College Dublin, 2019.
 Contact sbruton[á]tcd.ie.
 """
-import os
 
-import numpy as np
-import h5py
 from torch.utils.data.dataset import Dataset
+import numpy as np
+from typing import Union, List
 
 
 class LightFieldDataset(Dataset):
     """
-    Dataset wrapping images and targets for the lfvishead dataset
+    Abstract Dataset class for use in light field training experiments.
     """
 
-    def __init__(self,
-                 dataset_loc: os.path,
-                 training: bool = True):
+    def __init__(self):
         super(LightFieldDataset, self).__init__()
-        self.dataset_loc = dataset_loc
-        self.training = training
+        self.num_channels = None
 
-        # TODO: Parameterize this
-        if self.training:
-            self.start_idx = 0
-            self.stop_idx = 1600
-        else:
-            self.start_idx = 1600
-            self.stop_idx = 2000
+        self.num_views_y = None
+        self.height_y = None
+        self.width_y = None
 
-        self.h5_file = h5py.File(dataset_loc, 'r')
-        images_shape = self.h5_file['images'].shape
-        self.lf_images = self.h5_file['images']
-        print("Found images dataset with shape {}".format(self.lf_images.shape))
-
-        self.x_light_field_idxs = [0, 7, 56, 63]
-        self.channels = images_shape[-3]
-        self.total_channels = self.channels
-        self.height = images_shape[-2]
-        self.width = images_shape[-1]
-        self.total_samples = self.stop_idx - self.start_idx
-
-        self.image_indices = np.arange(self.start_idx,
-                                       self.stop_idx,
-                                       dtype=np.int32)
-
-        if self.training:
-            dataset_type = "Train"
-        else:
-            dataset_type = "Test"
-
-        print("{} idxs {} ... {}".format(dataset_type,
-                                         self.image_indices[:10],
-                                         self.image_indices[-10:]))
-
-        # Cache y to ram
-        if not self.training:
-            self.y_images = \
-                np.squeeze(
-                    self.lf_images[self.start_idx:self.stop_idx, 37, :, :, :]
-                )
-
-        self.y = np.zeros(shape=(len(self.image_indices),
-                                 self.channels,
-                                 self.height,
-                                 self.width),
-                          dtype=np.float32)
-
-        self.mean = self.h5_file['mean'][:]
-
-        self.mean = np.zeros(self.mean.shape, self.mean.dtype)
-
-        # TODO: Test the actual variance
-        self.var = self.h5_file['scale'][:]
-        self.std_dev = np.sqrt(self.var)
-        self.std_dev = 255.0 * np.ones(self.std_dev.shape, self.std_dev.dtype)
-
-        self.y_mean = self.mean[37]
-        self.y_std_dev = self.std_dev[37]
-
-        self.x_mean = np.array(
-            [self.mean[0],
-             self.mean[7],
-             self.mean[56],
-             self.mean[63]]
-        )
-        self.x_mean = np.concatenate(self.x_mean)
-
-        self.x_std_dev = np.array(
-            [self.std_dev[0],
-             self.std_dev[7],
-             self.std_dev[56],
-             self.std_dev[63]]
-        )
-
-        self.x_std_dev = np.concatenate(self.x_std_dev)
-
-        for y_idx, image_idx in enumerate(self.image_indices):
-            y_image = self.lf_images[image_idx, 37].astype(np.float32)
-            y_image -= self.y_mean
-            y_image /= self.y_std_dev
-            self.y[y_idx] = y_image
-
-        self.sample_shape = (4, self.channels, self.height, self.width)
-
-        if self.training:
-            self.get_item_fn = self._get_sample_train
-        else:
-            self.get_item_fn = self._get_sample_test
+        self.num_views_x = None
+        self.height_x = None
+        self.width_x = None
 
     def __len__(self):
-        return self.image_indices.shape[0]
+        raise NotImplementedError
 
-    def _get_sample_train(self, idx):
-        y = self.y[idx]
+    def __getitem__(self, index):
+        raise NotImplementedError
 
-        x = np.zeros(shape=(len(self.x_light_field_idxs) * self.channels,
-                            self.height,
-                            self.width),
-                     dtype=np.float32)
+    def set_only_x_dataset(self):
+        raise NotImplementedError
 
-        image_idx = self.image_indices[idx]
-        for x_idx, sub_img_idx in enumerate(self.x_light_field_idxs):
-            x[x_idx * self.channels: (x_idx * self.channels) + self.channels] = \
-                self.lf_images[image_idx, sub_img_idx].astype(np.float32)
+    def revert_only_x_dataset(self):
+        raise NotImplementedError
 
-        x -= self.x_mean
-        x /= self.x_std_dev
+    def get_only_y(self, idx: int):
+        raise NotImplementedError
 
-        return x, y
+    def get_y_images(self, to_list: bool = True) -> Union[np.ndarray, List]:
+        pass
 
-    def _get_sample_test(self, idx):
-        y = self.y[idx]
+    def get_x_images(self, to_list: bool = True) -> Union[np.ndarray, List]:
+        pass
 
-        x = np.zeros(shape=(len(self.x_light_field_idxs) * self.channels,
-                            self.height,
-                            self.width),
-                     dtype=np.float32)
-
-        image_idx = self.image_indices[idx]
-        for x_idx, sub_img_idx in enumerate(self.x_light_field_idxs):
-            x[x_idx * self.channels: (x_idx * self.channels) + self.channels] = \
-                self.lf_images[image_idx, sub_img_idx].astype(np.float32)
-
-        x -= self.x_mean
-        x /= self.x_std_dev
-
-        return x, y
-
-    def __getitem__(self, idx):
-        return self.get_item_fn(idx=idx)
+    def fast_collate(self, batch):
+        pass

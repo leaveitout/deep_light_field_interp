@@ -1,0 +1,3 @@
+[submodule "deeplfinterp/ext/PerceptualSimilarity"]
+	path = deeplfinterp/ext/PerceptualSimilarity
+	url = https://github.com/leaveitout/PerceptualSimilarity.git

@@ -1,105 +1,49 @@
 #!/usr/bin/env python3
 """
-Copyright Seán Bruton, Trinity College Dublin, 2017.
+Copyright Seán Bruton, Trinity College Dublin, 2019.
 Contact sbruton[á]tcd.ie.
 """
+from .direct_net_6x6 import SubNet, BasicNet
+
+import os
+
 import torch
+import torch.nn.functional as nnf
+import numpy as np
 
 
-class BasicNet(torch.nn.Module):
-    def __init__(self, num_in_channels, num_out_channels):
-        super(BasicNet, self).__init__()
+class DirectNetVol3x3Conv6x6(torch.nn.Module):
+    def __init__(self, vol_path: os.path):
+        super().__init__()
+        print("DirectNetVol3x3Conv")
 
-        self.conv1 = torch.nn.Conv2d(in_channels=num_in_channels,
-                                     out_channels=num_out_channels,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
+        vol_np = np.load(vol_path)
 
-        # self.batch_norm1 = torch.nn.InstanceNorm2d(num_out_channels)
+        if vol_np.shape[1] == 512:
+            vol_np = vol_np[:, ::2, :]
 
-        self.conv2 = torch.nn.Conv2d(in_channels=num_out_channels,
-                                     out_channels=num_out_channels,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
+        if vol_np.shape[2] == 512:
+            vol_np = vol_np[:, :, ::2]
 
-        # self.batch_norm2 = torch.nn.InstanceNorm2d(num_out_channels)
+        self.vol = torch.nn.Parameter(torch.from_numpy(vol_np))
 
-        # self.conv3 = torch.nn.Conv2d(in_channels=num_out_channels,
-        #                              out_channels=num_out_channels,
-        #                              kernel_size=3,
-        #                              stride=1,
-        #                              padding=1)
+        self.vol_conv1 = torch.nn.Conv2d(in_channels=self.vol.size(0),
+                                         out_channels=64,
+                                         kernel_size=3,
+                                         stride=1,
+                                         padding=1)
 
-        # self.batch_norm3 = torch.nn.InstanceNorm2d(num_out_channels)
+        self.vol_conv2 = torch.nn.Conv2d(in_channels=64,
+                                         out_channels=32,
+                                         kernel_size=3,
+                                         stride=1,
+                                         padding=1)
 
-        self.relu = torch.nn.ReLU(inplace=False)
-
-    def forward(self, input_tensor):
-        output = self.conv1(input_tensor)
-        # output = self.batch_norm1(output)
-        output = self.relu(output)
-        output = self.conv2(output)
-        # output = self.batch_norm2(output)
-        output = self.relu(output)
-        # output = self.conv3(output)
-        # # output = self.batch_norm3(output)
-        # output = self.relu(output)
-
-        return output
-
-
-class SubNet(torch.nn.Module):
-    def __init__(self):
-        super(SubNet, self).__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels=128,
-                                     out_channels=128,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
-
-        # self.conv2 = torch.nn.Conv2d(in_channels=240,
-        #                              out_channels=240,
-        #                              kernel_size=3,
-        #                              stride=1,
-        #                              padding=1)
-        #
-        # self.conv3 = torch.nn.Conv2d(in_channels=240,
-        #                              out_channels=240,
-        #                              kernel_size=3,
-        #                              stride=1,
-        #                              padding=1)
-
-        self.upsample = torch.nn.Upsample(scale_factor=2,
-                                          mode='bilinear',
-                                          align_corners=True)
-
-        self.conv4 = torch.nn.Conv2d(in_channels=128,
-                                     out_channels=128,
-                                     kernel_size=3,
-                                     stride=1,
-                                     padding=1)
-
-        self.relu = torch.nn.ReLU(inplace=False)
-
-    def forward(self, input_tensor):
-        output = self.conv1(input_tensor)
-        output = self.relu(output)
-        # output = self.conv2(output)
-        # output = self.relu(output)
-        # output = self.conv3(output)
-        # output = self.relu(output)
-        output = self.upsample(output)
-        output = self.conv4(output)
-
-        return output
-
-
-class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
-    def __init__(self, num_rank_images):
-        super(LFVolBaseNetFullLFSmallRank, self).__init__()
-        print("LFVolBaseNetFullLFSmall")
+        self.vol_conv3 = torch.nn.Conv2d(in_channels=32,
+                                         out_channels=16,
+                                         kernel_size=3,
+                                         stride=1,
+                                         padding=1)
 
         self.conv1 = BasicNet(16, 32)
         self.pool1 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
@@ -113,7 +57,7 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         self.conv4 = BasicNet(128, 256)
         self.pool4 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv1_vol = BasicNet(num_rank_images, 32)
+        self.conv1_vol = BasicNet(16, 32)
         self.pool1_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
         self.conv2_vol = BasicNet(32, 64)
@@ -124,26 +68,6 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
 
         self.conv4_vol = BasicNet(128, 256)
         self.pool4_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
-
-        # self.conv5 = BasicNet(256, 512)
-        # self.pool5 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
-        #
-        # self.deconv5 = BasicNet(512, 512)
-        # self.upsample5 = torch.nn.Sequential(
-        #     torch.nn.Upsample(
-        #         scale_factor=2,
-        #         mode='bilinear',
-        #         align_corners=True
-        #     ),
-        #     torch.nn.Conv2d(
-        #         in_channels=512,
-        #         out_channels=512,
-        #         kernel_size=3,
-        #         stride=1,
-        #         padding=1
-        #     ),
-        #     torch.nn.ReLU(inplace=False)
-        # )
 
         self.deconv4 = BasicNet(256, 256)
         self.upsample4 = torch.nn.Sequential(
@@ -315,16 +239,13 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         # View as original size
         return z.view_as(x)
 
-    def forward(self, inputs, x_mean, x_std_dev):
+    def forward(self, inputs):
         # Need to do this so that we can load the data as np.uint8.
         # It is extremely slow to load a light field as floats.
         # It is also not possible to load as fp16 as pytorch does not have
         # concatenation defined for cpu fp16.
-        inputs = inputs.float()
         inputs_image = inputs[:, :16]
         vol_rep = inputs[:, 16:]
-        inputs_image = inputs_image - x_mean
-        inputs_image = inputs_image / x_std_dev
 
         # Main branch
         conv1_output = self.conv1(inputs_image)
@@ -340,6 +261,10 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         pool4_output = self.pool4(conv4_output)
 
         # Volume branch
+        vol = nnf.relu(self.vol_conv1(self.vol))
+        vol = nnf.relu(self.vol_conv2(vol))
+        vol = nnf.relu(self.vol_conv2(vol))
+
         conv1_vol_output = self.conv1_vol(vol_rep)
         pool1_vol_output = self.pool1_vol(conv1_vol_output)
 
@@ -356,13 +281,11 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         deconv4_output = self.deconv4(pool4_output)
         upsample4_output = self.upsample4(deconv4_output)
 
-        # combined_output = self._add_tiled(upsample4_output, conv4_output)
         combined_output = upsample4_output + conv4_output
 
         deconv3_output = self.deconv3(combined_output)
         upsample3_output = self.upsample3(deconv3_output)
 
-        # combined_output = self._add_tiled(upsample3_output, conv3_output)
         combined_output = upsample3_output + conv3_output
 
         deconv2_output = self.deconv2(combined_output)
@@ -387,23 +310,15 @@ class LFVolBaseNetFullLFSmallRank(torch.nn.Module):
         deconv2_vol_output = self.deconv2_vol(combined_vol_output)
         upsample2_vol_output = self.upsample2_vol(deconv2_vol_output)
 
-        combined_vol_output = self._add_tiled(upsample2_vol_output, conv2_output)
+        combined_vol_output = self._add_tiled(upsample2_vol_output,
+                                              conv2_output)
 
         deconv1_vol_output = self.deconv1_vol(combined_vol_output)
         upsample1_vol_output = self.upsample1_vol(deconv1_vol_output)
 
-        # combined_vol_output = upsample1_vol_output + conv1_output
-
-        # outputs = upsample1_output
         outputs = self._add_tiled(upsample1_output, conv1_output)
 
         outputs = outputs + upsample1_vol_output
-
-        # outputs = self.final_subnet(combined_output)
-
-        outputs = outputs * x_std_dev
-
-        outputs = outputs + x_mean
 
         return outputs
 
