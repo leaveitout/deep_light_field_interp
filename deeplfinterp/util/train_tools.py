@@ -19,7 +19,7 @@ from .analytics import calc_and_save_all_metrics
 from torch.utils.data.dataset import Dataset
 from ..datasets.light_field_dataset import LightFieldDataset
 from torch.utils.data.sampler import RandomSampler, SequentialSampler
-import amp
+# import amp
 
 cudnn.benchmark = True
 
