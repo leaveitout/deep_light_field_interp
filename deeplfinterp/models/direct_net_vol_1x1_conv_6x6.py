@@ -25,6 +25,8 @@ class DirectNetVol1x1Conv6x6(torch.nn.Module):
         if vol_np.shape[2] == 512:
             vol_np = vol_np[:, :, :2]
 
+        vol_np = vol_np.astype(np.float32)
+
         self.vol_images = torch.nn.Parameter(
             torch.unsqueeze(torch.from_numpy(vol_np), dim=0)
         )
