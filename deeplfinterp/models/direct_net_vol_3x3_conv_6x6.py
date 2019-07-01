@@ -29,7 +29,7 @@ class DirectNetVol3x3Conv6x6(torch.nn.Module):
             torch.unsqueeze(torch.from_numpy(vol_np), dim=0)
         )
 
-        self.vol_conv1 = torch.nn.Conv2d(in_channels=self.vol.size(0),
+        self.vol_conv1 = torch.nn.Conv2d(in_channels=self.vol.size(1),
                                          out_channels=64,
                                          kernel_size=3,
                                          stride=1,

@@ -40,7 +40,7 @@ class DirectNetVolImage6x6(torch.nn.Module):
         self.conv4 = BasicNet(128, 256)
         self.pool4 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv1_vol = BasicNet(self.vol_images.size(0), 32)
+        self.conv1_vol = BasicNet(16, 32)
         self.pool1_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
         self.conv2_vol = BasicNet(32, 64)
