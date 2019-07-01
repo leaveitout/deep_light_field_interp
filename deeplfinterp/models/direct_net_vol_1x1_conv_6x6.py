@@ -23,7 +23,7 @@ class DirectNetVol1x1Conv6x6(torch.nn.Module):
             vol_np = vol_np[:, ::2, :]
 
         if vol_np.shape[2] == 512:
-            vol_np = vol_np[:, :, :2]
+            vol_np = vol_np[:, :, ::2]
 
         vol_np = vol_np.astype(np.float32)
 
