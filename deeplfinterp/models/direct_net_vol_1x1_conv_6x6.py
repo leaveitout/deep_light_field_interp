@@ -274,7 +274,7 @@ class DirectNetVol1x1Conv6x6(torch.nn.Module):
         )
         vol = nnf.relu(self.vol_conv1(expanded_vol))
         vol = nnf.relu(self.vol_conv2(vol))
-        vol = nnf.relu(self.vol_conv2(vol))
+        vol = nnf.relu(self.vol_conv3(vol))
 
         conv1_vol_output = self.conv1_vol(vol)
         pool1_vol_output = self.pool1_vol(conv1_vol_output)
