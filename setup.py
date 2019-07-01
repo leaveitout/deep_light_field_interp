@@ -25,7 +25,7 @@ setup(
     install_requires=['torch',
                       'numpy',
                       'h5py',
-                      'progressbar',
+                      'progressbar2',
                       'matplotlib',
                       'sklearn',
                       'scikit-image']
