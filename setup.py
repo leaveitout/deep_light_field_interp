@@ -28,5 +28,5 @@ setup(
                       'progressbar',
                       'matplotlib',
                       'sklearn',
-                      'skimage']
+                      'scikit-image']
 )
