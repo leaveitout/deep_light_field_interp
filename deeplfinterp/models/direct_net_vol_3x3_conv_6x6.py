@@ -25,7 +25,9 @@ class DirectNetVol3x3Conv6x6(torch.nn.Module):
         if vol_np.shape[2] == 512:
             vol_np = vol_np[:, :, ::2]
 
-        self.vol = torch.nn.Parameter(torch.from_numpy(vol_np))
+        self.vol_images = torch.nn.Parameter(
+            torch.unsqueeze(torch.from_numpy(vol_np), dim=0)
+        )
 
         self.vol_conv1 = torch.nn.Conv2d(in_channels=self.vol.size(0),
                                          out_channels=64,
@@ -265,7 +267,13 @@ class DirectNetVol3x3Conv6x6(torch.nn.Module):
         pool4_output = self.pool4(conv4_output)
 
         # Volume branch
-        vol = nnf.relu(self.vol_conv1(self.vol))
+        expanded_vol = self.vol.expand(
+            inputs.size(0),
+            self.vol.size(1),
+            self.vol.size(2),
+            self.vol.size(3)
+        )
+        vol = nnf.relu(self.vol_conv1(expanded_vol))
         vol = nnf.relu(self.vol_conv2(vol))
         vol = nnf.relu(self.vol_conv2(vol))
 
