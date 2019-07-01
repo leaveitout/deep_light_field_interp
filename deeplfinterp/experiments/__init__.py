@@ -3,8 +3,11 @@
 Copyright Seán Bruton, Trinity College Dublin, 2017. 
 Contact sbruton[á]tcd.ie.
 """
-from .base_network_experiment import LFBaseNetExperiment
-from .base_network_experiment_full_lf import LFBaseNetExperimentFullLF
-from .base_network_experiment_full_lf_small import LFBaseNetExperimentFullLFSmall
-from .base_network_experiment_full_lf_small_rank import LFBaseNetExperimentFullLFSmallRank
-from .lf_vol_net_experiment import LFVolNetExperiment
+from .experiment import Experiment
+from .direct_net_6x6_experiment import DirectNet6x6Experiment
+from .direct_net_vol_1x1_conv_6x6_experiment import \
+    DirectNetVol1x1Conv6x6Experiment
+from .direct_net_vol_3x3_conv_6x6_experiment import \
+    DirectNetVol3x3Conv6x6Experiment
+from .direct_net_vol_images_6x6_experiment import \
+    DirectNetVolImages6x6Experiment
