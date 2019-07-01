@@ -18,11 +18,13 @@ class DirectNetVolImage6x6(torch.nn.Module):
 
         vol_images_np = np.load(vol_images_path)
 
+        num_vol_image_planes = vol_images_np.shape[0]
+
         if vol_images_np.shape[1] == 512:
             vol_images_np = vol_images_np[:, ::2, :]
 
         if vol_images_np.shape[2] == 512:
-            vol_images_np = vol_images_np[:, ::2, :]
+            vol_images_np = vol_images_np[:, :, ::2]
 
         self.vol_images = torch.nn.Parameter(
             torch.unsqueeze(torch.from_numpy(vol_images_np), dim=0)
@@ -40,7 +42,7 @@ class DirectNetVolImage6x6(torch.nn.Module):
         self.conv4 = BasicNet(128, 256)
         self.pool4 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
-        self.conv1_vol = BasicNet(16, 32)
+        self.conv1_vol = BasicNet(num_vol_image_planes, 32)
         self.pool1_vol = torch.nn.AvgPool2d(kernel_size=2, stride=2)
 
         self.conv2_vol = BasicNet(32, 64)
