@@ -26,8 +26,8 @@ class DirectNetVol3x3Conv6x6(torch.nn.Module):
             vol_np = vol_np[:, :, ::2]
 
         vol_np = vol_np.astype(np.float32)
-        
-        self.vol_images = torch.nn.Parameter(
+
+        self.vol = torch.nn.Parameter(
             torch.unsqueeze(torch.from_numpy(vol_np), dim=0)
         )
 
