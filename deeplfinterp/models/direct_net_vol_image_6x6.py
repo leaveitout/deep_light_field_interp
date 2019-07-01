@@ -225,6 +225,12 @@ class DirectNetVolImage6x6(torch.nn.Module):
         # It is extremely slow to load a light field as floats.
         # It is also not possible to load as fp16 as pytorch does not have
         # concatenation defined for cpu fp16.
+        inputs = inputs.view(
+            inputs.size(0),
+            inputs.size(1) * inputs.size(2),
+            inputs.size(3),
+            inputs.size(4)
+        )
 
         # Main branch
         conv1_output = self.conv1(inputs)
@@ -294,6 +300,14 @@ class DirectNetVolImage6x6(torch.nn.Module):
         outputs = self._add_tiled(upsample1_output, conv1_output)
 
         outputs = outputs + upsample1_vol_output
+        
+        outputs = outputs.view(
+            outputs.size(0),
+            outputs.size(1) // 4,
+            4,
+            outputs.size(2),
+            outputs.size(3)
+        )
 
         return outputs
 

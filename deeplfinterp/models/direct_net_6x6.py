@@ -181,6 +181,12 @@ class DirectNet6x6(torch.nn.Module):
         return z.view_as(x)
 
     def forward(self, inputs):
+        inputs = inputs.view(
+            inputs.size(0),
+            inputs.size(1) * inputs.size(2),
+            inputs.size(3),
+            inputs.size(4)
+        )
 
         conv1_output = self.conv1(inputs)
         pool1_output = self.pool1(conv1_output)
@@ -213,6 +219,14 @@ class DirectNet6x6(torch.nn.Module):
         upsample1_output = self.upsample1(deconv1_output)
 
         outputs = self._add_tiled(upsample1_output, conv1_output)
+
+        outputs = outputs.view(
+            outputs.size(0),
+            outputs.size(1) // 4,
+            4,
+            outputs.size(2),
+            outputs.size(3)
+        )
 
         return outputs
 
