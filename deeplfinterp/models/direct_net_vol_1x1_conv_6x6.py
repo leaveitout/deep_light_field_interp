@@ -32,19 +32,16 @@ class DirectNetVol1x1Conv6x6(torch.nn.Module):
         )
 
         self.vol_conv1 = torch.nn.Conv2d(in_channels=self.vol.size(1),
-                                         out_channels=64,
-                                         kernel_size=1,
-                                         stride=1)
-
-        self.vol_conv2 = torch.nn.Conv2d(in_channels=64,
                                          out_channels=32,
-                                         kernel_size=1,
-                                         stride=1)
+                                         kernel_size=3,
+                                         stride=1,
+                                         padding=1)
 
-        self.vol_conv3 = torch.nn.Conv2d(in_channels=32,
+        self.vol_conv2 = torch.nn.Conv2d(in_channels=32,
                                          out_channels=16,
-                                         kernel_size=1,
-                                         stride=1)
+                                         kernel_size=3,
+                                         stride=1,
+                                         padding=1)
 
         self.conv1 = BasicNet(16, 32)
         self.pool1 = torch.nn.AvgPool2d(kernel_size=2, stride=2)
@@ -274,7 +271,6 @@ class DirectNetVol1x1Conv6x6(torch.nn.Module):
         )
         vol = nnf.relu(self.vol_conv1(expanded_vol))
         vol = nnf.relu(self.vol_conv2(vol))
-        vol = nnf.relu(self.vol_conv3(vol))
 
         conv1_vol_output = self.conv1_vol(vol)
         pool1_vol_output = self.pool1_vol(conv1_vol_output)
