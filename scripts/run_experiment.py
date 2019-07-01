@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
 """
-Copyright Seán Bruton, Trinity College Dublin, 2017. 
+Copyright Seán Bruton, Trinity College Dublin, 2019.
 Contact sbruton[á]tcd.ie.
 """
 import argparse
 import sys
 import os
 import json
+import inspect
 
-from deeplfinterp.experiments import LFBaseNetExperiment
-from deeplfinterp.experiments import LFVolNetExperiment
-from deeplfinterp.experiments import LFBaseNetExperimentFullLF
-from deeplfinterp.experiments import LFBaseNetExperimentFullLFSmall
-from deeplfinterp.experiments import LFBaseNetExperimentFullLFSmallRank
-
-experiments = {
-    'lf_base_net': LFBaseNetExperiment,
-    'lf_base_net_full_lf': LFBaseNetExperimentFullLF,
-    'lf_base_net_full_lf_small': LFBaseNetExperimentFullLFSmall,
-    'lf_base_net_full_lf_small_rank': LFBaseNetExperimentFullLFSmallRank,
-    'lf_vol_net': LFVolNetExperiment
-}
+from deeplfinterp.experiments import *
 
 
 def run_experiment(experiment_config: dict):
-    experiment_type = experiments[experiment_config['experiment_type']]
+    class_members = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    class_members_dict = dict(class_members)
+    experiment_type = class_members_dict[experiment_config['experiment_type']]
     print("Experiment Type: {}".format(experiment_type))
 
     experiment = experiment_type(experiment_config)
@@ -49,4 +40,3 @@ if __name__ == '__main__':
     else:
         print("Config file does not exist at location, exiting...")
         sys.exit(1)
-
