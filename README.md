@@ -31,22 +31,20 @@ git clone --recurse-submodules https://github.com/leaveitout/inviwo.git
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+The following libraries should be installed in the users environment to run the code:
 
 Python 3, Pytorch, numpy, matplotlib.
 
 
 ## Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+To install the code as a package to allow running of the scripts, please run:
 
 ```
 python3 setup.py --install [--user] 
 ```
 
-## Running the scripts
+## Running experiments
 
-Create a valid .json file in line with the scripts and run scripts/run_experiment.py from the same environment in which the package is installed.
+Create a valid .json file in line with the scripts and run scripts/run_experiment.py from the same environment in which the package is installed, making sure to specify the locations of the various resources (datasets, output directories, etc.).
 
